@@ -13,7 +13,7 @@ import LoadingOverlay from '../components/LoadingOverlay';
 import Icon from '../components/Icon';
 import { CameraScreenProps } from '../navigation/RouteParams';
 
-const REFERENCE_IMAGE = require('../assets/images/reference_face.jpg');
+const REFERENCE_IMAGE = require('../assets/images/reference_face.png');
 
 const CameraScreen: FC<CameraScreenProps> = ({ route }) => {
   const { captureMode, customReferenceUri } = route.params;
@@ -117,15 +117,6 @@ const CameraScreen: FC<CameraScreenProps> = ({ route }) => {
         />
 
         <View style={styles.overlay}>
-          <TouchableOpacity style={styles.backButton} onPress={goBack}>
-            <Icon
-              iconFamily="Ionicons"
-              name="arrow-back"
-              size={24}
-              color="#FFF"
-            />
-          </TouchableOpacity>
-
           <View style={styles.guideContainer}>
             <View style={styles.faceOutline}>
               {capturedImage ? (
@@ -154,6 +145,15 @@ const CameraScreen: FC<CameraScreenProps> = ({ route }) => {
             </TouchableOpacity>
           </View>
         </View>
+
+        <TouchableOpacity style={styles.backButton} onPress={goBack}>
+          <Icon
+            iconFamily="Ionicons"
+            name="arrow-back"
+            size={24}
+            color="#FFF"
+          />
+        </TouchableOpacity>
       </View>
 
       <LoadingOverlay
@@ -175,13 +175,16 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'space-between',
+    marginTop: 100,
   },
   backButton: {
-    margin: 20,
     padding: 8,
     backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: 8,
     alignSelf: 'flex-start',
+    position: 'absolute',
+    top: 35,
+    left: 10,
   },
   image: {
     width: '100%',
@@ -196,6 +199,7 @@ const styles = StyleSheet.create({
   guideContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 10,
   },
   faceOutline: {
     width: 250,
@@ -214,6 +218,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 15,
     borderRadius: 8,
+    marginTop: 10,
   },
   captureButtonContainer: {
     alignItems: 'center',

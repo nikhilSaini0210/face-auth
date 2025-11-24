@@ -43,11 +43,35 @@ const ResultScreen: FC<ResultScreenProps> = ({ route }) => {
 
         <View style={styles.details}>
           {isSuccess ? (
-            <>
-              <Text style={styles.detailText}>✅ Face detected</Text>
-              <Text style={styles.detailText}>✅ Features extracted</Text>
-              <Text style={styles.detailText}>✅ Match confirmed</Text>
-            </>
+            <View>
+              <View style={styles.detailContainer}>
+                <Icon
+                  iconFamily="Ionicons"
+                  name="checkbox"
+                  color="#4CAF50"
+                  size={24}
+                />
+                <Text style={styles.detailText}>Face detected</Text>
+              </View>
+              <View style={styles.detailContainer}>
+                <Icon
+                  iconFamily="Ionicons"
+                  name="checkbox"
+                  color="#4CAF50"
+                  size={24}
+                />
+                <Text style={styles.detailText}>Features extracted</Text>
+              </View>
+              <View style={styles.detailContainer}>
+                <Icon
+                  iconFamily="Ionicons"
+                  name="checkbox"
+                  color="#4CAF50"
+                  size={24}
+                />
+                <Text style={styles.detailText}>Match confirmed</Text>
+              </View>
+            </View>
           ) : (
             <>
               <Text style={styles.detailText}>⚠️ Face mismatch detected</Text>
@@ -114,7 +138,15 @@ const styles = StyleSheet.create({
   },
   details: {
     alignItems: 'center',
-    gap: 10,
+    width: '100%',
+    marginTop: 10,
+  },
+  detailContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 4,
   },
   detailText: {
     fontSize: 16,

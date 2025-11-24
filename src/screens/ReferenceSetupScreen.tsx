@@ -13,8 +13,9 @@ import { navigate, goBack } from '../utils/NavigationUtil';
 import { Routes } from '../navigation/Routes';
 import Icon from '../components/Icon';
 import PrimaryButton from '../components/PrimaryButton';
+import CameraModal from '../components/CameraModal';
 
-const REFERENCE_IMAGE = require('../assets/images/reference_face.jpg');
+const REFERENCE_IMAGE = require('../assets/images/reference_face.png');
 
 const ReferenceSetupScreen: FC = () => {
   const [customReferenceUri, setCustomReferenceUri] = useState<string | null>(
@@ -23,11 +24,20 @@ const ReferenceSetupScreen: FC = () => {
   const [selectedMode, setSelectedMode] = useState<'default' | 'custom' | null>(
     null,
   );
+  const [cameraVisible, setCameraVisible] = useState(false);
 
-  const handleCaptureReference = () => {};
+  const handleCaptureReference = () => {
+    setCameraVisible(true);
+  };
 
   const handleUseDefault = () => {
     setSelectedMode('default');
+  };
+
+  const onCapture = (uri: string) => {
+    setCustomReferenceUri(uri);
+    setSelectedMode('custom');
+    setCameraVisible(false);
   };
 
   const handleProceedToVerification = () => {
@@ -196,9 +206,7 @@ const ReferenceSetupScreen: FC = () => {
                     size={20}
                     color="#F44336"
                   />
-                  <Text
-                    style={[styles.secondaryButtonText, { color: '#F44336' }]}
-                  >
+                  <Text style={[styles.secondaryButtonText, styles.bgcolor]}>
                     Clear
                   </Text>
                 </TouchableOpacity>
@@ -251,6 +259,16 @@ const ReferenceSetupScreen: FC = () => {
           />
         </View>
       </ScrollView>
+
+      <CameraModal
+        cameraVisible={cameraVisible}
+        onClose={() => {
+          setCameraVisible(false);
+          setCustomReferenceUri(null);
+          setSelectedMode(null);
+        }}
+        onCapture={onCapture}
+      />
     </SafeAreaView>
   );
 };
@@ -266,6 +284,7 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
   },
+  bgcolor: { color: '#F44336' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
