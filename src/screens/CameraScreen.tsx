@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import {
   Camera,
   useCameraDevice,
@@ -9,9 +9,14 @@ import {
 interface CameraScreenProps {
   onCapture: (uri: string) => void;
   onBack: () => void;
+  captureImage?: string | null;
 }
 
-const CameraScreen: React.FC<CameraScreenProps> = ({ onCapture, onBack }) => {
+const CameraScreen: React.FC<CameraScreenProps> = ({
+  onCapture,
+  onBack,
+  captureImage,
+}) => {
   const device = useCameraDevice('front');
   const { hasPermission, requestPermission } = useCameraPermission();
   const cameraRef = useRef<Camera>(null);
@@ -76,7 +81,18 @@ const CameraScreen: React.FC<CameraScreenProps> = ({ onCapture, onBack }) => {
         </TouchableOpacity>
 
         <View style={styles.guideContainer}>
-          <View style={styles.faceOutline} />
+          <View style={styles.faceOutline}>
+            {captureImage ? (
+              <Image
+                source={{ uri: captureImage }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: 125,
+                }}
+              />
+            ) : null}
+          </View>
           <Text style={styles.guideText}>Position your face in the frame</Text>
         </View>
 

@@ -67,7 +67,7 @@ const App: React.FC = () => {
       {currentScreen === 'home' && <HomeScreen onStartAuth={handleStartAuth} />}
 
       {currentScreen === 'camera' && (
-        <CameraScreen onCapture={handleCapture} onBack={handleHome} />
+        <CameraScreen onCapture={handleCapture} onBack={handleHome} captureImage={capturedImage} />
       )}
 
       {currentScreen === 'result' && (
