@@ -10,10 +10,13 @@ import FaceRecognitionService from '../services/FaceRecognitionService';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Routes } from '../navigation/Routes';
 import LoadingOverlay from '../components/LoadingOverlay';
+import Icon from '../components/Icon';
+import { CameraScreenProps } from '../navigation/RouteParams';
 
 const REFERENCE_IMAGE = require('../assets/images/reference_face.jpg');
 
-const CameraScreen: FC = () => {
+const CameraScreen: FC<CameraScreenProps> = ({ route }) => {
+  const { captureMode, customReferenceUri } = route.params;
   const device = useCameraDevice('front');
   const { hasPermission, requestPermission } = useCameraPermission();
   const cameraRef = useRef<Camera>(null);
@@ -25,9 +28,13 @@ const CameraScreen: FC = () => {
     setCapturedImage(uri);
     setIsProcessing(true);
     try {
-      const referenceSource = Image.resolveAssetSource(REFERENCE_IMAGE);
-
-      const referenceUri = referenceSource?.uri ?? REFERENCE_IMAGE;
+      let referenceUri = customReferenceUri;
+      if (captureMode === 'default') {
+        const referenceSource = Image.resolveAssetSource(REFERENCE_IMAGE);
+        referenceUri = referenceSource?.uri ?? REFERENCE_IMAGE;
+      } else {
+        referenceUri = customReferenceUri || '';
+      }
 
       const { match, similarity: score } =
         await FaceRecognitionService.compareFaces(uri, referenceUri);
@@ -111,7 +118,12 @@ const CameraScreen: FC = () => {
 
         <View style={styles.overlay}>
           <TouchableOpacity style={styles.backButton} onPress={goBack}>
-            <Text style={styles.backButtonText}>← Back</Text>
+            <Icon
+              iconFamily="Ionicons"
+              name="arrow-back"
+              size={24}
+              color="#FFF"
+            />
           </TouchableOpacity>
 
           <View style={styles.guideContainer}>
@@ -166,7 +178,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     margin: 20,
-    padding: 12,
+    padding: 8,
     backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: 8,
     alignSelf: 'flex-start',

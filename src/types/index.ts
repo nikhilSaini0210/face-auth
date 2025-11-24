@@ -9,3 +9,9 @@ export interface FaceComparisonResult {
   match: boolean;
   similarity: number;
 }
+
+export type IconFamily =
+  | 'Ionicons'
+  | 'MaterialCommunityIcons'
+  | 'AntDesign'
+  | 'MaterialIcons';

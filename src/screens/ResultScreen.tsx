@@ -4,6 +4,7 @@ import PrimaryButton from '../components/PrimaryButton';
 import { Routes } from '../navigation/Routes';
 import { goBack, resetAndNavigate } from '../utils/NavigationUtil';
 import { ResultScreenProps } from '../navigation/RouteParams';
+import Icon from '../components/Icon';
 
 const ResultScreen: FC<ResultScreenProps> = ({ route }) => {
   const { result, similarity } = route.params;
@@ -21,13 +22,13 @@ const ResultScreen: FC<ResultScreenProps> = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View
-          style={[
-            styles.icon,
-            isSuccess ? styles.successIcon : styles.failedIcon,
-          ]}
-        >
-          <Text style={styles.iconText}>{isSuccess ? '✓' : '✕'}</Text>
+        <View style={[styles.icon]}>
+          <Icon
+            iconFamily="Ionicons"
+            name={isSuccess ? 'checkmark-circle' : 'close-circle'}
+            color={isSuccess ? '#4CAF50' : '#F44336'}
+            size={100}
+          />
         </View>
 
         <Text style={styles.title}>
@@ -92,12 +93,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
-  },
-  successIcon: {
-    backgroundColor: '#4CAF50',
-  },
-  failedIcon: {
-    backgroundColor: '#F44336',
   },
   iconText: {
     fontSize: 60,

@@ -8,6 +8,7 @@ import HomeScreen from '../screens/HomeScreen';
 import CameraScreen from '../screens/CameraScreen';
 import { RootStackParamList } from './RouteParams';
 import ResultScreen from '../screens/ResultScreen';
+import ReferenceSetupScreen from '../screens/ReferenceSetupScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -24,6 +25,10 @@ const Navigation: FC = () => {
         initialRouteName={Routes.Home}
       >
         <Stack.Screen name={Routes.Home} component={HomeScreen} />
+        <Stack.Screen
+          name={Routes.REFERENCE}
+          component={ReferenceSetupScreen}
+        />
         <Stack.Screen name={Routes.CAMERA} component={CameraScreen} />
         <Stack.Screen name={Routes.RESULT} component={ResultScreen} />
       </Stack.Navigator>

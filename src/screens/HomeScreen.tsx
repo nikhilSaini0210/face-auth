@@ -4,6 +4,7 @@ import PrimaryButton from '../components/PrimaryButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { navigate } from '../utils/NavigationUtil';
 import { Routes } from '../navigation/Routes';
+import Icon from '../components/Icon';
 
 const HomeScreen: FC = () => {
   return (
@@ -28,7 +29,12 @@ const HomeScreen: FC = () => {
             <Text style={styles.featureText}>AI-powered matching</Text>
           </View>
           <View style={styles.featureContainer}>
-            <Text style={styles.featureIcon}>✅</Text>
+            <Icon
+              iconFamily="Ionicons"
+              name="checkbox"
+              color="#4CAF50"
+              size={36}
+            />
             <Text style={styles.featureText}>Instant verification</Text>
           </View>
         </View>
@@ -36,7 +42,7 @@ const HomeScreen: FC = () => {
         <View style={styles.footer}>
           <PrimaryButton
             title="Start Face Authentication"
-            onPress={() => navigate(Routes.CAMERA)}
+            onPress={() => navigate(Routes.REFERENCE)}
           />
         </View>
       </View>
@@ -88,11 +94,11 @@ const styles = StyleSheet.create({
   },
   featureIcon: {
     fontSize: 32,
-    marginRight: 15,
   },
   featureText: {
     fontSize: 18,
     color: '#333',
+    marginLeft: 15,
   },
   footer: {
     padding: 20,
