@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet, Image } from 'react-native';
 import { ResultType, Screen } from './src/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen';
@@ -26,8 +26,12 @@ const App: React.FC = () => {
     setIsProcessing(true);
 
     try {
+      const referenceSource = Image.resolveAssetSource(REFERENCE_IMAGE);
+
+      const referenceUri = referenceSource?.uri ?? REFERENCE_IMAGE;
+
       const { match, similarity: score } =
-        await FaceRecognitionService.compareFaces(uri, REFERENCE_IMAGE);
+        await FaceRecognitionService.compareFaces(uri, referenceUri);
 
       setSimilarity(score);
       setResult(match ? 'success' : 'failed');
