@@ -1,26 +1,53 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import {
   Camera,
   useCameraDevice,
   useCameraPermission,
 } from 'react-native-vision-camera';
+import { goBack, navigate } from '../utils/NavigationUtil';
+import FaceRecognitionService from '../services/FaceRecognitionService';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Routes } from '../navigation/Routes';
+import LoadingOverlay from '../components/LoadingOverlay';
 
-interface CameraScreenProps {
-  onCapture: (uri: string) => void;
-  onBack: () => void;
-  captureImage?: string | null;
-}
+const REFERENCE_IMAGE = require('../assets/images/reference_face.jpg');
 
-const CameraScreen: React.FC<CameraScreenProps> = ({
-  onCapture,
-  onBack,
-  captureImage,
-}) => {
+const CameraScreen: FC = () => {
   const device = useCameraDevice('front');
   const { hasPermission, requestPermission } = useCameraPermission();
   const cameraRef = useRef<Camera>(null);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const onCapture = async (uri: string) => {
+    setCapturedImage(uri);
+    setIsProcessing(true);
+    try {
+      const referenceSource = Image.resolveAssetSource(REFERENCE_IMAGE);
+
+      const referenceUri = referenceSource?.uri ?? REFERENCE_IMAGE;
+
+      const { match, similarity: score } =
+        await FaceRecognitionService.compareFaces(uri, referenceUri);
+
+      navigate(Routes.RESULT, {
+        result: match ? 'success' : 'failed',
+        similarity: score,
+      });
+
+      setCapturedImage(null);
+    } catch (error) {
+      console.error('Face recognition error:', error);
+      navigate(Routes.RESULT, {
+        result: 'failed',
+        similarity: 0,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   useEffect(() => {
     if (!hasPermission) {
@@ -40,80 +67,96 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
     } catch (error) {
       console.error('Capture error:', error);
       setIsCapturing(false);
+    } finally {
+      setIsCapturing(false);
     }
   };
 
   if (!hasPermission) {
     return (
-      <View style={styles.permissionContainer}>
-        <Text style={styles.permissionText}>Camera permission required</Text>
-        <TouchableOpacity
-          style={styles.permissionButton}
-          onPress={requestPermission}
-        >
-          <Text style={styles.permissionButtonText}>Grant Permission</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.permissionContainer}>
+          <Text style={styles.permissionText}>Camera permission required</Text>
+          <TouchableOpacity
+            style={styles.permissionButton}
+            onPress={requestPermission}
+          >
+            <Text style={styles.permissionButtonText}>Grant Permission</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (!device) {
     return (
-      <View style={styles.permissionContainer}>
-        <Text style={styles.permissionText}>No camera device found</Text>
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.permissionContainer}>
+          <Text style={styles.permissionText}>No camera device found</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Camera
-        ref={cameraRef}
-        style={StyleSheet.absoluteFill}
-        device={device}
-        isActive={true}
-        photo={true}
-      />
+    <>
+      <View style={styles.container}>
+        <Camera
+          ref={cameraRef}
+          style={StyleSheet.absoluteFill}
+          device={device}
+          isActive={true}
+          photo={true}
+        />
 
-      <View style={styles.overlay}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-
-        <View style={styles.guideContainer}>
-          <View style={styles.faceOutline}>
-            {captureImage ? (
-              <Image
-                source={{ uri: captureImage }}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: 125,
-                }}
-              />
-            ) : null}
-          </View>
-          <Text style={styles.guideText}>Position your face in the frame</Text>
-        </View>
-
-        <View style={styles.captureButtonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.captureButton,
-              isCapturing && styles.captureButtonDisabled,
-            ]}
-            onPress={handleCapture}
-            disabled={isCapturing}
-          >
-            <View style={styles.captureButtonInner} />
+        <View style={styles.overlay}>
+          <TouchableOpacity style={styles.backButton} onPress={goBack}>
+            <Text style={styles.backButtonText}>← Back</Text>
           </TouchableOpacity>
+
+          <View style={styles.guideContainer}>
+            <View style={styles.faceOutline}>
+              {capturedImage ? (
+                <Image
+                  source={{ uri: capturedImage }}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
+              ) : null}
+            </View>
+            <Text style={styles.guideText}>
+              Position your face in the frame
+            </Text>
+          </View>
+
+          <View style={styles.captureButtonContainer}>
+            <TouchableOpacity
+              style={[
+                styles.captureButton,
+                isCapturing && styles.captureButtonDisabled,
+              ]}
+              onPress={handleCapture}
+              disabled={isCapturing}
+            >
+              <View style={styles.captureButtonInner} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+
+      <LoadingOverlay
+        visible={isProcessing}
+        message="Analyzing face... Please wait"
+      />
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+  },
   container: {
     flex: 1,
   },
@@ -127,6 +170,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: 8,
     alignSelf: 'flex-start',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 125,
   },
   backButtonText: {
     color: '#FFF',

@@ -1,22 +1,22 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import PrimaryButton from '../components/PrimaryButton';
-import { ResultType } from '../types';
+import { Routes } from '../navigation/Routes';
+import { goBack, resetAndNavigate } from '../utils/NavigationUtil';
+import { ResultScreenProps } from '../navigation/RouteParams';
 
-interface ResultScreenProps {
-  result: ResultType;
-  similarity: number;
-  onRetry: () => void;
-  onHome: () => void;
-}
+const ResultScreen: FC<ResultScreenProps> = ({ route }) => {
+  const { result, similarity } = route.params;
 
-const ResultScreen: React.FC<ResultScreenProps> = ({
-  result,
-  similarity,
-  onRetry,
-  onHome,
-}) => {
   const isSuccess = result === 'success';
+
+  const handleRetry = () => {
+    goBack();
+  };
+
+  const handleHome = () => {
+    resetAndNavigate(Routes.Home);
+  };
 
   return (
     <View style={styles.container}>
@@ -62,12 +62,12 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
         {!isSuccess && (
           <PrimaryButton
             title="Try Again"
-            onPress={onRetry}
+            onPress={handleRetry}
             variant="secondary"
             style={styles.retryButton}
           />
         )}
-        <PrimaryButton title="Back to Home" onPress={onHome} />
+        <PrimaryButton title="Back to Home" onPress={handleHome} />
       </View>
     </View>
   );

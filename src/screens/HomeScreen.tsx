@@ -1,49 +1,54 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import PrimaryButton from '../components/PrimaryButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { navigate } from '../utils/NavigationUtil';
+import { Routes } from '../navigation/Routes';
 
-interface HomeScreenProps {
-  onStartAuth: () => void;
-}
-
-const HomeScreen: React.FC<HomeScreenProps> = ({ onStartAuth }) => {
+const HomeScreen: FC = () => {
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.icon}>🔐</Text>
-        <Text style={styles.title}>Face Authentication</Text>
-        <Text style={styles.title}>Demo</Text>
-        <Text style={styles.subtitle}>
-          Secure face-based authentication using custom recognition logic
-        </Text>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.icon}>🔐</Text>
+          <Text style={styles.title}>Face Authentication</Text>
+          <Text style={styles.title}>Demo</Text>
+          <Text style={styles.subtitle}>
+            Secure face-based authentication using custom recognition logic
+          </Text>
+        </View>
 
-      <View style={styles.content}>
-        <View style={styles.featureContainer}>
-          <Text style={styles.featureIcon}>📸</Text>
-          <Text style={styles.featureText}>Capture your face</Text>
+        <View style={styles.content}>
+          <View style={styles.featureContainer}>
+            <Text style={styles.featureIcon}>📸</Text>
+            <Text style={styles.featureText}>Capture your face</Text>
+          </View>
+          <View style={styles.featureContainer}>
+            <Text style={styles.featureIcon}>🤖</Text>
+            <Text style={styles.featureText}>AI-powered matching</Text>
+          </View>
+          <View style={styles.featureContainer}>
+            <Text style={styles.featureIcon}>✅</Text>
+            <Text style={styles.featureText}>Instant verification</Text>
+          </View>
         </View>
-        <View style={styles.featureContainer}>
-          <Text style={styles.featureIcon}>🤖</Text>
-          <Text style={styles.featureText}>AI-powered matching</Text>
-        </View>
-        <View style={styles.featureContainer}>
-          <Text style={styles.featureIcon}>✅</Text>
-          <Text style={styles.featureText}>Instant verification</Text>
-        </View>
-      </View>
 
-      <View style={styles.footer}>
-        <PrimaryButton
-          title="Start Face Authentication"
-          onPress={onStartAuth}
-        />
+        <View style={styles.footer}>
+          <PrimaryButton
+            title="Start Face Authentication"
+            onPress={() => navigate(Routes.CAMERA)}
+          />
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
